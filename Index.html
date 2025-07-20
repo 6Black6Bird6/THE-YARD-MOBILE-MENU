@@ -2,118 +2,301 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>The Yard Cocktail Menu</title>
+  <title>The Yard Mobile Cocktail Bar</title>
   <style>
     body {
-      margin: 0; padding: 20px;
-      font-family: 'Arial', sans-serif;
-      background: #000;
-      color: #fff;
-      display: flex; flex-direction: column; align-items: center;
-    }
-    h1, h2 { color: #FFA500; margin-bottom: 10px; }
-    .menu, .rating {
-      display: flex; flex-wrap: wrap; gap: 16px;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-    .item, .special-btn {
-      background: #111;
-      border: 2px solid #FFA500;
-      border-radius: 10px;
-      padding: 14px 18px;
-      width: 140px;
+      font-family: Arial, sans-serif;
+      background-color: black;
+      color: white;
+      padding: 20px;
       text-align: center;
+      transition: background 0.8s ease-in-out;
+    }
+    select, button {
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      font-size: 16px;
+    }
+    button {
+      background-color: orange;
+      color: white;
       cursor: pointer;
-      transition: transform .2s, box-shadow .2s;
+      margin-left: 10px;
+    }
+    .vibe-selector, .random-btn, .cocktail-of-week, #adminPanel {
+      margin: 20px auto;
+    }
+    .menu-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 30px;
+    }
+    .cocktail-card {
+      background-color: #222;
+      border-radius: 12px;
+      padding: 15px;
+      width: 200px;
+      box-shadow: 0 0 10px rgba(255,165,0,0.3);
       position: relative;
-      user-select: none;
     }
-    .item:hover, .special-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 12px #FFA500;
+    .cocktail-card img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 10px;
     }
-    .item:active {
-      animation: flicker .4s alternate infinite;
+    .cocktail-card h3 {
+      margin: 0;
+      font-size: 18px;
     }
-    @keyframes flicker {
-      0%,100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-    .rating {
-      gap: 12px;
-    }
-    .rating span {
-      font-size: 28px;
+    .fav-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      color: gold;
       cursor: pointer;
-      transition: transform .1s;
     }
-    .rating span:active {
-      transform: scale(1.3);
+    .cocktail-of-week h2 {
+      color: orange;
     }
-    .special-btn {
-      background: #222;
-      font-weight: bold;
+    audio {
+      display: none;
     }
-    .highlight {
-      border-color: #fff;
-      box-shadow: 0 0 18px #fff !important;
+    #adminPanel {
+      display: none;
+      max-width: 400px;
+      border: 1px solid #555;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #111;
+    }
+    #adminPanel h2 {
+      color: orange;
+    }
+
+    /* Mood-specific backgrounds + animations */
+    body.fun {
+      background: linear-gradient(45deg, #ff5f6d, #ffc371);
+      animation: pulse 6s infinite;
+    }
+    body.romantic {
+      background: linear-gradient(45deg, #b24592, #f15f79);
+      animation: glow 8s infinite;
+    }
+    body.chill {
+      background: linear-gradient(45deg, #2193b0, #6dd5ed);
+      animation: breathe 10s infinite;
+    }
+    body.adventurous {
+      background: linear-gradient(45deg, #f7971e, #ffd200);
+      animation: pulse 5s infinite;
+    }
+    body.classy {
+      background: linear-gradient(45deg, #434343, #000000);
+      animation: fadein 15s infinite;
+    }
+    @keyframes pulse {
+      0% { filter: brightness(1); }
+      50% { filter: brightness(1.2); }
+      100% { filter: brightness(1); }
+    }
+    @keyframes glow {
+      0% { filter: drop-shadow(0 0 5px #f15f79); }
+      50% { filter: drop-shadow(0 0 15px #f15f79); }
+      100% { filter: drop-shadow(0 0 5px #f15f79); }
+    }
+    @keyframes breathe {
+      0%, 100% { filter: blur(0px); }
+      50% { filter: blur(2px); }
+    }
+    @keyframes fadein {
+      0% { opacity: 0.9; }
+      50% { opacity: 1; }
+      100% { opacity: 0.9; }
     }
   </style>
 </head>
 <body>
-  <h1>🍹 The Yard Cocktail Menu</h1>
-  <h2 id="spotlight">Cocktail of the Week: <em id="spotlight-name">Sting</em></h2>
+  <h1>The Yard Mobile Cocktail Bar 🍹</h1>
 
-  <div class="menu" id="menu">
-    <!-- Cocktail items populated by JS -->
+  <div class="vibe-selector">
+    <label for="mood">Choose your vibe:</label>
+    <select id="mood">
+      <option value="fun">Fun & Wild</option>
+      <option value="romantic">Romantic</option>
+      <option value="chill">Chill & Relax</option>
+      <option value="adventurous">Adventurous</option>
+      <option value="classy">Classy</option>
+    </select>
+    <button onclick="suggestCocktail()">Suggest Cocktail</button>
   </div>
 
-  <button class="special-btn" id="random-btn">🎲 Surprise Me!</button>
-  <div class="rating" id="rating-container">
-    <span data-val="1">😐</span>
-    <span data-val="2">🙂</span>
-    <span data-val="3">😍</span>
+  <div class="random-btn">
+    <button onclick="randomCocktail()">Can't Choose? Surprise Me!</button>
   </div>
+
+  <div class="cocktail-of-week">
+    <h2>Cocktail of the Week</h2>
+    <p id="weeklyCocktail">Blue Lagoon 🍹</p>
+  </div>
+
+  <!-- Admin Panel -->
+  <div id="adminPanel">
+    <h2>Admin Panel 🛠️</h2>
+    <label for="cocktailSelect">Set Cocktail of the Week:</label>
+    <select id="cocktailSelect"></select>
+    <button onclick="setWeeklyCocktail()">Update</button>
+  </div>
+
+  <div class="menu-container" id="cocktailMenu"></div>
+  <audio id="cocktailSound" preload="auto"></audio>
 
   <script>
-    const cocktails = ["Sting","Blue Lagoon","Coochie Mama","Dark Desire","9 Rounds","Daiquiri","Vaxxine","Coronation","Mojito"];
-    const menuEl = document.getElementById("menu");
-    const spotlightEl = document.getElementById("spotlight-name");
-    const randomBtn = document.getElementById("random-btn");
-    const ratingContainer = document.getElementById("rating-container");
+    const cocktails = {
+      fun: [
+        { name: 'Coochie Mama', img: 'coochie-mama.jpg', sound: 'coochie-mama.mp3' },
+        { name: '9 Rounds', img: '9-rounds.jpg', sound: '9-rounds.mp3' },
+        { name: 'Vaxxine', img: 'vaxxine.jpg', sound: 'vaxxine.mp3' }
+      ],
+      romantic: [
+        { name: 'Dark Desire', img: 'dark-desire.jpg', sound: 'dark-desire.mp3' },
+        { name: 'Cosmopolitan', img: 'cosmopolitan.jpg', sound: 'cosmopolitan.mp3' }
+      ],
+      chill: [
+        { name: 'Mojito', img: 'mojito.jpg', sound: 'mojito.mp3' },
+        { name: 'G & T', img: 'gt.jpg', sound: 'gt.mp3' },
+        { name: 'Daiquiri', img: 'daiquiri.jpg', sound: 'daiquiri.mp3' }
+      ],
+      adventurous: [
+        { name: 'Sting', img: 'sting.jpg', sound: 'sting.mp3' },
+        { name: 'Coronator', img: 'coronator.jpg', sound: 'coronator.mp3' }
+      ],
+      classy: [
+        { name: 'Blue Lagoon', img: 'blue-lagoon.jpg', sound: 'blue-lagoon.mp3' }
+      ]
+    };
 
-    // Build menu items
-    cocktails.forEach(name => {
-      const div = document.createElement("div");
-      div.className = "item";
-      div.textContent = name;
-      div.onclick = () => {
-        alert(name + " — Cheers!");
-        highlight(name);
-      };
-      menuEl.appendChild(div);
-    });
+    const cocktailMenu = document.getElementById('cocktailMenu');
+    const soundPlayer = document.getElementById('cocktailSound');
+    const weeklyCocktailElement = document.getElementById('weeklyCocktail');
+    const cocktailSelect = document.getElementById('cocktailSelect');
 
-    // Highlight function
-    function highlight(name) {
-      document.querySelectorAll(".item").forEach(el => {
-        el.classList.toggle("highlight", el.textContent === name);
+    function suggestCocktail() {
+      const mood = document.getElementById('mood').value;
+      document.body.className = mood;
+      const selectedCocktails = cocktails[mood];
+      const cocktail = selectedCocktails[Math.floor(Math.random() * selectedCocktails.length)];
+      displayCocktails([cocktail]);
+      logAnalytics('suggest-cocktail', { mood });
+    }
+
+    function randomCocktail() {
+      const allCocktails = Object.values(cocktails).flat();
+      const random = allCocktails[Math.floor(Math.random() * allCocktails.length)];
+      document.body.className = '';
+      displayCocktails([random]);
+      logAnalytics('random-cocktail');
+    }
+
+    function displayCocktails(cocktailList) {
+      cocktailMenu.innerHTML = '';
+      cocktailList.forEach(cocktail => {
+        const card = document.createElement('div');
+        card.className = 'cocktail-card';
+        card.innerHTML = `
+          <button class="fav-btn" onclick="toggleFavorite('${cocktail.name}')">★</button>
+          <img src="${cocktail.img}" alt="${cocktail.name}" />
+          <h3>${cocktail.name}</h3>
+        `;
+        cocktailMenu.appendChild(card);
+        playSound(cocktail.sound);
       });
     }
 
-    // Random button
-    randomBtn.onclick = () => {
-      const choice = cocktails[Math.floor(Math.random() * cocktails.length)];
-      spotlightEl.textContent = choice;
-      highlight(choice);
-    };
+    function playSound(fileName) {
+      soundPlayer.src = fileName;
+      soundPlayer.play();
+    }
 
-    // Emoji rating
-    ratingContainer.onclick = e => {
-      const val = e.target.dataset.val;
-      if (val) alert(`Thanks for rating us ${["😐","🙂","😍"][val-1]}`);
+    function toggleFavorite(name) {
+      let favs = JSON.parse(localStorage.getItem('favorites')) || [];
+      if (favs.includes(name)) {
+        favs = favs.filter(item => item !== name);
+      } else {
+        favs.push(name);
+      }
+      localStorage.setItem('favorites', JSON.stringify(favs));
+      alert(`Favorite updated: ${name}`);
+      logAnalytics('toggle-favorite', { name, status: favs.includes(name) ? 'added' : 'removed' });
+    }
+
+    function populateCocktailOptions() {
+      const allCocktails = Object.values(cocktails).flat();
+      allCocktails.forEach(c => {
+        const option = document.createElement('option');
+        option.value = c.name;
+        option.textContent = c.name;
+        cocktailSelect.appendChild(option);
+      });
+    }
+
+    function setWeeklyCocktail() {
+      const selected = cocktailSelect.value;
+      localStorage.setItem('weeklyCocktail', selected);
+      weeklyCocktailElement.textContent = `${selected} 🍹`;
+      alert('Cocktail of the Week updated!');
+      logAnalytics('admin-set-weekly', { cocktail: selected });
+    }
+
+    function showAdminPanel() {
+      const pass = prompt("Enter admin password:");
+      if (pass === "yardmaster") {
+        document.getElementById('adminPanel').style.display = 'block';
+        populateCocktailOptions();
+      } else {
+        alert("Access denied!");
+      }
+    }
+
+    function logAnalytics(event, data = {}) {
+      const payload = {
+        event,
+        timestamp: new Date().toISOString(),
+        data,
+      };
+
+      // Replace with your own endpoint
+      fetch('https://your-analytics-api.com/log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).catch(err => {
+        console.warn('Analytics failed:', err);
+      });
+    }
+
+    window.onload = () => {
+      const savedCocktail = localStorage.getItem('weeklyCocktail') || 'Blue Lagoon';
+      weeklyCocktailElement.textContent = `${savedCocktail} 🍹`;
+
+      const favs = JSON.parse(localStorage.getItem('favorites')) || [];
+      if (favs.length > 0) {
+        const allCocktails = Object.values(cocktails).flat();
+        const favCocktails = allCocktails.filter(c => favs.includes(c.name));
+        displayCocktails(favCocktails);
+      }
+
+      // Shortcut to admin panel: Ctrl + A
+      document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'a') {
+          showAdminPanel();
+        }
+      });
     };
   </script>
 </body>
