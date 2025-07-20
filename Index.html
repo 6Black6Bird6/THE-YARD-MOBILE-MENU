@@ -1,1 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Yard Cocktail Menu</title>
+  <style>
+    body {
+      margin: 0; padding: 20px;
+      font-family: 'Arial', sans-serif;
+      background: #000;
+      color: #fff;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    h1, h2 { color: #FFA500; margin-bottom: 10px; }
+    .menu, .rating {
+      display: flex; flex-wrap: wrap; gap: 16px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .item, .special-btn {
+      background: #111;
+      border: 2px solid #FFA500;
+      border-radius: 10px;
+      padding: 14px 18px;
+      width: 140px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      position: relative;
+      user-select: none;
+    }
+    .item:hover, .special-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 12px #FFA500;
+    }
+    .item:active {
+      animation: flicker .4s alternate infinite;
+    }
+    @keyframes flicker {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .rating {
+      gap: 12px;
+    }
+    .rating span {
+      font-size: 28px;
+      cursor: pointer;
+      transition: transform .1s;
+    }
+    .rating span:active {
+      transform: scale(1.3);
+    }
+    .special-btn {
+      background: #222;
+      font-weight: bold;
+    }
+    .highlight {
+      border-color: #fff;
+      box-shadow: 0 0 18px #fff !important;
+    }
+  </style>
+</head>
+<body>
+  <h1>🍹 The Yard Cocktail Menu</h1>
+  <h2 id="spotlight">Cocktail of the Week: <em id="spotlight-name">Sting</em></h2>
 
+  <div class="menu" id="menu">
+    <!-- Cocktail items populated by JS -->
+  </div>
+
+  <button class="special-btn" id="random-btn">🎲 Surprise Me!</button>
+  <div class="rating" id="rating-container">
+    <span data-val="1">😐</span>
+    <span data-val="2">🙂</span>
+    <span data-val="3">😍</span>
+  </div>
+
+  <script>
+    const cocktails = ["Sting","Blue Lagoon","Coochie Mama","Dark Desire","9 Rounds","Daiquiri","Vaxxine","Coronation","Mojito"];
+    const menuEl = document.getElementById("menu");
+    const spotlightEl = document.getElementById("spotlight-name");
+    const randomBtn = document.getElementById("random-btn");
+    const ratingContainer = document.getElementById("rating-container");
+
+    // Build menu items
+    cocktails.forEach(name => {
+      const div = document.createElement("div");
+      div.className = "item";
+      div.textContent = name;
+      div.onclick = () => {
+        alert(name + " — Cheers!");
+        highlight(name);
+      };
+      menuEl.appendChild(div);
+    });
+
+    // Highlight function
+    function highlight(name) {
+      document.querySelectorAll(".item").forEach(el => {
+        el.classList.toggle("highlight", el.textContent === name);
+      });
+    }
+
+    // Random button
+    randomBtn.onclick = () => {
+      const choice = cocktails[Math.floor(Math.random() * cocktails.length)];
+      spotlightEl.textContent = choice;
+      highlight(choice);
+    };
+
+    // Emoji rating
+    ratingContainer.onclick = e => {
+      const val = e.target.dataset.val;
+      if (val) alert(`Thanks for rating us ${["😐","🙂","😍"][val-1]}`);
+    };
+  </script>
+</body>
+</html>
